@@ -127,9 +127,9 @@ list_size(0 )
     Double_node *sentinel_tail = new Double_node(Type(), nullptr, nullptr);
     list_head->next_node = sentinel_head;
     list_tail->previous_node = sentinel_tail;
-    for (int i = 0; i < list.size(); ++i) {
+    for (auto *it = list.begin(); it != list.end(); it = it->next()) {
         //TODO: go through each node in new list
-        list_size++;
+        //it
     }
 
 }
@@ -141,12 +141,15 @@ list_head( nullptr ),
 list_tail( nullptr ),
 list_size( 0 )
 {
-	// Enter your implementation here
+    //TODO: do this as well
 }
 
 template <typename Type>
 Double_sentinel_list<Type>::~Double_sentinel_list() {
-	// Enter your implementation here
+    delete list_size;
+    delete list_head;
+    delete list_tail;
+    delete this->sentinel_head;// why can't it see this?
 }
 
 template <typename Type>
@@ -176,7 +179,7 @@ Type Double_sentinel_list<Type>::back() const {
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::begin() const {
-    return list_head->next_node.next();
+    return list_head->next_node->next();
     //is this returning an address?
 }
 
@@ -188,29 +191,35 @@ typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::en
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::rbegin() const {
-    return list_tail->previous_node.previous();
+    return list_tail->previous_node->previous();
     //     list tail  sentinel tail last node
 }
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::rend() const {
     return list_head->next_node;
+    //     list head  sentinel head
 }
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::find( Type const &obj ) const {
     for (auto *it = this->begin(); it != this->end(); it = it->next()) {
-        if (it->node_value == obj) {
+        if (it->value() == obj) {
             return it;
         }
     }
-    return std::cout << "This value doesn't exist" << std::endl;
+    return std::cout << "This value doesn't exist" << '';
 }
 
 template <typename Type>
 int Double_sentinel_list<Type>::count( Type const &obj ) const {
-	// Enter your implementation here
-	return 0;
+    int counter = 0;
+    for (auto *it = this->begin(); it != this->end(); it = it->next()) {
+        if (it->value() == obj) {
+            counter++;
+        }
+    }
+    return counter;
 }
 
 template <typename Type>
@@ -241,7 +250,8 @@ Double_sentinel_list<Type> &Double_sentinel_list<Type>::operator=( Double_sentin
 
 template <typename Type>
 void Double_sentinel_list<Type>::push_front( Type const &obj ) {
-	// Enter your implementation here
+    auto *temporary_ptr = list_head->next_node->next();
+    list_head->next_node->next_node = new Double_node(Type(),)
 }
 
 template <typename Type>
