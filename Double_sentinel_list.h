@@ -70,8 +70,8 @@ class Double_sentinel_list {
 		int erase( Type const & );
 
 	private:
-		Double_node *list_head;
-		Double_node *list_tail;
+    Double_node *list_head = nullptr;
+    Double_node *list_tail = nullptr;
 		int list_size;
 
 		// List any additional private member functions you author here
@@ -102,9 +102,10 @@ list_tail(nullptr ),
 list_size(0 )
 {
     Double_node *sentinel_head = new Double_node(Type(), nullptr, nullptr);
+//                                               Type    previous next
     Double_node *sentinel_tail = new Double_node(Type(), nullptr, nullptr);
-    list_head->next_node = sentinel_head;
-    list_tail->previous_node = sentinel_tail;
+    list_head = sentinel_head;
+    list_tail = sentinel_tail;
     sentinel_head->next_node = sentinel_tail;
     sentinel_tail->previous_node = sentinel_head;
 }
@@ -119,18 +120,14 @@ list must not affect the copy. (O(n))
 template <typename Type>
 Double_sentinel_list<Type>::Double_sentinel_list(Double_sentinel_list<Type> const &list ):
 // Updated the initialization list here
-list_head(nullptr ),
-list_tail(nullptr ),
 list_size(0 )
 {
-    Double_node *sentinel_head = new Double_node(Type(), nullptr, nullptr);
-    Double_node *sentinel_tail = new Double_node(Type(), nullptr, nullptr);
-    list_head->next_node = sentinel_head;
-    list_tail->previous_node = sentinel_tail;
+    Double_sentinel_list *newList = new Double_sentinel_list();
     for (auto *it = list.begin(); it != list.end(); it = it->next()) {
-        //TODO: go through each node in new list
-        //it
+        newList->push_back(it->value());
     }
+
+    //TODO: Connect new list heads and tails and sizes
 
 }
 
@@ -147,9 +144,9 @@ list_size( 0 )
 template <typename Type>
 Double_sentinel_list<Type>::~Double_sentinel_list() {
     delete list_size;
+    //do this last
     delete list_head;
     delete list_tail;
-    delete this->sentinel_head;// why can't it see this?
 }
 
 template <typename Type>
@@ -160,45 +157,46 @@ int Double_sentinel_list<Type>::size() const {
 template <typename Type>
 bool Double_sentinel_list<Type>::empty() const {
     //TODO: maybe need to encapsulate in a try and catch
-    return list_head->next_node->next_node->next_node == list_tail ? true : false;
+    //return list_head->next_node->next_node->next_node == list_tail ? true : false;
+    return list_size == 0 ? true : false;
 }
 
 template <typename Type>
 Type Double_sentinel_list<Type>::front() const {
     //TODO: encapsulte in try and catch
-    return list_head->next_node->next_node->node_value;
-    //     list head   sentinel    first node  node value
+    return list_head->next_node->node_value;
+    //     sentinel_head  first node  node value
 }
 
 template <typename Type>
 Type Double_sentinel_list<Type>::back() const {
     //TODO: encapsulate in try and catch
-    return list_tail->previous_node->previous_node->node_value;
-    //     list tail    sentinel tail    last node        node value
+    return list_tail->previous_node->node_value;
+    //     sentinel_tail  last node      node value
 }
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::begin() const {
-    return list_head->next_node->next();
+    return list_head->next();
     //is this returning an address?
 }
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::end() const {
-    return list_tail->previous_node;
-    //     list tail  sentinel tail
+    return list_tail;
+    //     sentinel tail
 }
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::rbegin() const {
-    return list_tail->previous_node->previous();
-    //     list tail  sentinel tail last node
+    return list_tail->previous();
+    //     sentinel tail last node
 }
 
 template <typename Type>
 typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::rend() const {
-    return list_head->next_node;
-    //     list head  sentinel head
+    return list_head;
+    //     sentinel head
 }
 
 template <typename Type>
@@ -208,7 +206,7 @@ typename Double_sentinel_list<Type>::Double_node *Double_sentinel_list<Type>::fi
             return it;
         }
     }
-    return std::cout << "This value doesn't exist" << '';
+    return end();
 }
 
 template <typename Type>
@@ -250,23 +248,43 @@ Double_sentinel_list<Type> &Double_sentinel_list<Type>::operator=( Double_sentin
 
 template <typename Type>
 void Double_sentinel_list<Type>::push_front( Type const &obj ) {
-    auto *temporary_ptr = list_head->next_node->next();
-    list_head->next_node->next_node = new Double_node(Type(),)
+    Double_node *former_first_node = list_head->next_node;
+    list_head->next_node = new Double_node(Type(), list_head, former_first_node);
+    former_first_node->previous_node = list_head->next_node;
+
+    list_head->next_node->node_value = obj;
+    list_size++;
 }
 
 template <typename Type>
 void Double_sentinel_list<Type>::push_back( Type const &obj ) {
-	// Enter your implementation here
+    Double_node *former_last_node = list_tail->previous_node;
+    former_last_node->next_node = new Double_node(Type(), list_tail, former_last_node);
+    list_tail->previous_node = former_last_node->next_node;
+
+    list_tail->previous_node->node_value = obj;
+    list_size++;
 }
 
 template <typename Type>
 void Double_sentinel_list<Type>::pop_front() {
-	// Enter your implementation here
+    //TODO: underflow exception
+    //Ill have to create a temporary node so I don't have a memory leak
+    Double_node *temp_first_node = list_head->next_node;
+    list_head->next_node = list_head->next_node->next_node;
+    temp_first_node->next_node->previous_node = list_head;
+
+    list_size--;
+    //delete first node
+    delete temp_first_node;
+    //verify that this deletes node and not just the pointer.
 }
 
 template <typename Type>
 void Double_sentinel_list<Type>::pop_back() {
-	// Enter your implementation here
+    //TODO: underflow error
+    Double_node *temp_last_node = list_tail->previous_node;
+
 }
 
 template <typename Type>
