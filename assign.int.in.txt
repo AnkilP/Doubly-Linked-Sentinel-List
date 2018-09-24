@@ -7,17 +7,7 @@ push_front 3
 // Once we execute the assign command, we are testing
 // the object which is assigned the value of the linked
 // list we created above
-assign
-	size 4
-	front 3
-	back 9
-	push_front 1
-	size 5
-	front 1
-	// We must now delete this newly created object
-	delete
-	// We will now go back to testing the original object
-exit
+move
 // It should not have changed
 size 4
 front 3

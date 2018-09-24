@@ -335,10 +335,21 @@ void Double_sentinel_list_tester<Type>::process() {
 
 		std::cout << "Okay" << std::endl;
 
-		Double_sentinel_list_tester<Type> tester( new_object );
+		Double_sentinel_list_tester<Type> tester(new_object);
 
 		tester.run();
-	} else if ( command == "cout" ) {
+	} else if (command == "move") {
+		Double_sentinel_list<Type> rhs;
+		rhs.push_back(1);
+		rhs.push_back(2);
+		rhs.push_back(3);
+		Double_sentinel_list<Type> lhs(std::move(rhs));
+		if (rhs.empty()) {
+			std::cout << "Move Successful\nLHS:\n" << lhs << "\nRHS:\n" << rhs << std::endl;
+		} else {
+			std::cout << "Move Failed\nLHS:\n" << lhs << "\nRHS:\n" << rhs << std::endl;
+		}
+	} else if (command == "cout") {
 		std::cout << *object << std::endl;
 	} else {
 		std::cout << command << ": Command not found." << std::endl;
